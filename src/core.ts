@@ -242,6 +242,8 @@ export const getLineChart: (
 export const getUsers: () => Promise<MPUser[] | Error> = async () => {
   try {
     const { Client } = require('pg');
+    console.log("############################\n");
+    console.log(process.env.DATABASE_URL);
 
     const client = new Client({
       connectionString: process.env.DATABASE_URL,
@@ -249,7 +251,7 @@ export const getUsers: () => Promise<MPUser[] | Error> = async () => {
         rejectUnauthorized: false
       }
     });
-
+    
     client.connect();
 
     client.query('SELECT username FROM MP_USERS;', (err: any, res:any) => {

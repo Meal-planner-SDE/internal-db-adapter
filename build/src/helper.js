@@ -14,8 +14,8 @@ exports.getCurrentDate = exports.getDateFromRequest = exports.getIdFromRequest =
  * @return the value of the parameter if the parameter is
  * correct and available, false otherwise
  */
-var getNumberFromRequest = function (req, param) {
-    var value = req.query[param];
+const getNumberFromRequest = (req, param) => {
+    let value = req.query[param];
     if (typeof value !== 'string') {
         return false;
     }
@@ -23,7 +23,7 @@ var getNumberFromRequest = function (req, param) {
         return parseInt(value);
     }
     catch (e) {
-        console.error("Error extracting parameter " + param + ":", e);
+        console.error(`Error extracting parameter ${param}:`, e);
         return false;
     }
 };
@@ -34,7 +34,7 @@ exports.getNumberFromRequest = getNumberFromRequest;
  * @return the id if the parameter is correct and
  * available, false otherwise
  */
-var getIdFromRequest = function (req) {
+const getIdFromRequest = (req) => {
     return exports.getNumberFromRequest(req, 'id');
 };
 exports.getIdFromRequest = getIdFromRequest;
@@ -45,11 +45,11 @@ exports.getIdFromRequest = getIdFromRequest;
  * if the parameter for the day/month/year is not available,
  * the current day/month/year will be used
  */
-var getDateFromRequest = function (req) {
-    var day = exports.getNumberFromRequest(req, 'd');
-    var month = exports.getNumberFromRequest(req, 'm');
-    var year = exports.getNumberFromRequest(req, 'y');
-    var currentDate = exports.getCurrentDate();
+const getDateFromRequest = (req) => {
+    let day = exports.getNumberFromRequest(req, 'd');
+    let month = exports.getNumberFromRequest(req, 'm');
+    let year = exports.getNumberFromRequest(req, 'y');
+    const currentDate = exports.getCurrentDate();
     if (day === false) {
         day = currentDate.day;
     }
@@ -71,8 +71,8 @@ exports.getDateFromRequest = getDateFromRequest;
  * @return an object containing day, month and years parameters
  * representing the current date (today)
  */
-var getCurrentDate = function () {
-    var date = new Date();
+const getCurrentDate = () => {
+    const date = new Date();
     return {
         day: date.getDate(),
         month: date.getMonth() + 1,

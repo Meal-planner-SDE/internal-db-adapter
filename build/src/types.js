@@ -5,7 +5,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isError = void 0;
-var isError = function (arg) {
+const isError = (arg) => {
     return arg && arg.error;
 };
 exports.isError = isError;
