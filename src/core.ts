@@ -10,12 +10,12 @@
  *   It really depends on your project, style and personal preference :)
  */
 
-import { CasesPerRegion, Entry, Error, isError, Region } from './types';
+import { CasesPerRegion, Entry, Error, isError, Region, MPUser } from './types';
 import config from '../config';
 import qs from 'qs';
 
 import axios from 'axios';
-import secrets from '../secrets';
+// import secrets from '../secrets';
 axios.defaults.paramsSerializer = (params) => {
   return qs.stringify(params, { indices: false });
 };
@@ -237,3 +237,37 @@ export const getLineChart: (
 };
 
 //#endregion
+
+
+export const getUsers: () => Promise<MPUser[] | Error> = async () => {
+  try {
+    const { Client } = require('pg');
+
+    const client = new Client({
+      connectionString: process.env.DATABASE_URL,
+      ssl: {
+        rejectUnauthorized: false
+      }
+    });
+
+    client.connect();
+
+    client.query('SELECT username FROM MP_USERS;', (err: any, res:any) => {
+      if (err) throw err;
+      for (let row of res.rows) {
+        console.log(JSON.stringify(row));
+      }
+      client.end();
+    });
+
+    // const users = await axios.get<Region[]>(`${config.URL_API_DATA}/regions`);
+    return new Promise<MPUser[]>(function(resolve, reject) {
+      resolve([]);
+    });
+  } catch (e) {
+    console.error(e);
+    return {
+      error: e.toString(),
+    };
+  }
+};

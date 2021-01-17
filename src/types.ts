@@ -40,3 +40,12 @@ export interface Entry {
   cases_tested: number;
 }
 
+export interface MPUser {
+  mp_user_id: number;
+  username: string;
+  height: number;
+  weight: number;
+  diet_type: string;
+  address: string;
+  shopping_list_id: number;
+}

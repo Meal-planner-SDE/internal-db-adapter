@@ -6,16 +6,17 @@
  *   The code written in here is executed just once!
  */
 
+
 import express from 'express';
 import errorHandler from 'errorhandler';
 import logger from 'morgan';
 import compression from 'compression';
-import bodyParser from 'body-parser';
 import cors from 'cors';
-
+// import require from 'require';
+// import process from 'process'
 // import config from './config';
 import router from './src/routes';
-
+const PORT = process.env.PORT || 9999;
 const index = express();
 
 // Log stack trace of errors (to be used only on development phases!)
@@ -25,8 +26,8 @@ index.use(logger('dev'));
 // Compress all responses
 index.use(compression());
 // Decode body responses
-index.use(bodyParser.json());
-index.use(bodyParser.urlencoded({ extended: true }));
+index.use(express.json());
+index.use(express.urlencoded({ extended: true }));
 // Enable Cross-Origin Resource Sharing
 index.use(cors());
 
@@ -34,5 +35,6 @@ index.use(cors());
 index.use('/', router);
 
 // Start listening for requests! :)
-// index.listen(config.PORT, config.HOST);
-// console.log(`API running on http://${config.HOST}:${config.PORT}`);
+index.listen(PORT, () => {
+    console.log(`⚡️[server]: Server is running on port ${PORT}`);
+});
