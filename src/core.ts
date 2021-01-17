@@ -254,7 +254,7 @@ export const getUsers: () => Promise<MPUser[] | Error> = async () => {
     
     client.connect();
 
-    client.query('SELECT username FROM MP_USERS;', (err: any, res:any) => {
+    client.query('SELECT username FROM MP_USER;', (err: any, res:any) => {
       if (err) throw err;
       for (let row of res.rows) {
         console.log(JSON.stringify(row));
