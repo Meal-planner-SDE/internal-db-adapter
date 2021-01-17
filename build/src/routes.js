@@ -13,9 +13,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
-const controller_1 = require("./controller");
-const router = express_1.default.Router();
+var express_1 = __importDefault(require("express"));
+var controller_1 = require("./controller");
+var router = express_1.default.Router();
 // Possible methods: .get, .post, .put, .patch, .delete
 // To add URL parameters (Doable for any method! Not only for GET):
 // router.get('/:parameter1/:parameter2', f);
