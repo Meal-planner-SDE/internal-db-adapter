@@ -15,11 +15,12 @@ const errorhandler_1 = __importDefault(require("errorhandler"));
 const morgan_1 = __importDefault(require("morgan"));
 const compression_1 = __importDefault(require("compression"));
 const cors_1 = __importDefault(require("cors"));
+require('dotenv').config();
 // import require from 'require';
 // import process from 'process'
 // import config from './config';
 const routes_1 = __importDefault(require("./src/routes"));
-const PORT = process.env.PORT || 9999;
+const PORT = process.env.PORT || 8888;
 const index = express_1.default();
 // Log stack trace of errors (to be used only on development phases!)
 index.use(errorhandler_1.default());

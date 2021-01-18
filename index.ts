@@ -12,11 +12,13 @@ import errorHandler from 'errorhandler';
 import logger from 'morgan';
 import compression from 'compression';
 import cors from 'cors';
+require('dotenv').config();
 // import require from 'require';
 // import process from 'process'
 // import config from './config';
 import router from './src/routes';
-const PORT = process.env.PORT || 9999;
+
+const PORT = process.env.PORT || 8888;
 const index = express();
 
 // Log stack trace of errors (to be used only on development phases!)

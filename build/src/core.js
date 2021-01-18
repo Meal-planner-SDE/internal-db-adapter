@@ -23,8 +23,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUsers = exports.getLineChart = exports.getBarChart = exports.getRanking = exports.getCasesByRegionId = exports.getRegionById = exports.getRegions = exports.getHello = void 0;
+exports.getUserByUsername = exports.getUsers = exports.getLineChart = exports.getBarChart = exports.getRanking = exports.getCasesByRegionId = exports.getRegionById = exports.getRegions = exports.getHello = void 0;
 const types_1 = require("./types");
+const dbUtils_1 = require("./dbUtils");
 const config_1 = __importDefault(require("../config"));
 const qs_1 = __importDefault(require("qs"));
 const axios_1 = __importDefault(require("axios"));
@@ -220,27 +221,8 @@ exports.getLineChart = getLineChart;
 //#endregion
 const getUsers = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { Client } = require('pg');
-        console.log("############################\n");
-        console.log(process.env.DATABASE_URL);
-        const client = new Client({
-            connectionString: process.env.DATABASE_URL,
-            ssl: {
-                rejectUnauthorized: false
-            }
-        });
-        client.connect();
-        client.query('SELECT username FROM MP_USERS;', (err, res) => {
-            if (err)
-                throw err;
-            for (let row of res.rows) {
-                console.log(JSON.stringify(row));
-            }
-            client.end();
-        });
-        // const users = await axios.get<Region[]>(`${config.URL_API_DATA}/regions`);
-        return new Promise(function (resolve, reject) {
-            resolve([]);
+        return dbUtils_1.queryDB('SELECT * FROM MP_USER;').then((users) => {
+            return users;
         });
     }
     catch (e) {
@@ -251,3 +233,17 @@ const getUsers = () => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getUsers = getUsers;
+const getUserByUsername = (username) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        return dbUtils_1.queryDB(`SELECT * FROM MP_USER WHERE username = '${username}';`).then((users) => {
+            return users[0];
+        });
+    }
+    catch (e) {
+        console.error(e);
+        return {
+            error: e.toString(),
+        };
+    }
+});
+exports.getUserByUsername = getUserByUsername;

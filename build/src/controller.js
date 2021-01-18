@@ -19,7 +19,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.users = exports.lineChart = exports.barChart = exports.ranking = exports.casesByRegionId = exports.regionById = exports.regions = exports.hello = void 0;
+exports.userByUsername = exports.users = exports.lineChart = exports.barChart = exports.ranking = exports.casesByRegionId = exports.regionById = exports.regions = exports.hello = void 0;
 const types_1 = require("./types");
 const core_1 = require("./core");
 const helper_1 = require("./helper");
@@ -116,3 +116,7 @@ const users = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.send(yield core_1.getUsers());
 });
 exports.users = users;
+const userByUsername = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.send(yield core_1.getUserByUsername(req.params.username));
+});
+exports.userByUsername = userByUsername;

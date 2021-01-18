@@ -18,7 +18,7 @@ import {
   getRanking,
   getRegionById,
   getRegions, getCasesByRegionId, getLineChart,
-  getUsers
+  getUsers, getUserByUsername
 } from './core';
 import {
   getDateFromRequest,
@@ -127,4 +127,8 @@ export const lineChart = async (req: Request, res: Response) => {
 
 export const users = async (req: Request, res: Response) => {
   res.send(await getUsers());
+};
+
+export const userByUsername = async (req: Request, res: Response) => {
+  res.send(await getUserByUsername(req.params.username));
 };

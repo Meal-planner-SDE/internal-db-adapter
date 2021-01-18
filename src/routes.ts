@@ -18,7 +18,8 @@ import {
   barChart,
   casesByRegionId,
   lineChart,
-  users
+  users,
+  userByUsername
 } from './controller';
 
 const router = express.Router();
@@ -31,6 +32,7 @@ const router = express.Router();
 router.get('/', hello); // Example
 
 router.get('/users', users);
+router.get('/users/:username', userByUsername);
 router.get('/regions', regions);
 router.get('/region', regionById);
 router.get('/cases', casesByRegionId);

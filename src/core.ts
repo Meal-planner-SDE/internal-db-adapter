@@ -11,6 +11,7 @@
  */
 
 import { CasesPerRegion, Entry, Error, isError, Region, MPUser } from './types';
+import { queryDB } from './dbUtils';
 import config from '../config';
 import qs from 'qs';
 
@@ -20,6 +21,8 @@ axios.defaults.paramsSerializer = (params) => {
   return qs.stringify(params, { indices: false });
 };
 
+
+    
 //#region --- EXAMPLE ---
 
 export const getHello: (name: string) => { text: string } = (name) => {
@@ -241,30 +244,21 @@ export const getLineChart: (
 
 export const getUsers: () => Promise<MPUser[] | Error> = async () => {
   try {
-    const { Client } = require('pg');
-    console.log("############################\n");
-    console.log(process.env.DATABASE_URL);
-
-    const client = new Client({
-      connectionString: process.env.DATABASE_URL,
-      ssl: {
-        rejectUnauthorized: false
-      }
+    return queryDB('SELECT * FROM MP_USER;').then((users) => {
+      return users as MPUser[];
     });
-    
-    client.connect();
+  } catch (e) {
+    console.error(e);
+    return {
+      error: e.toString(),
+    };
+  }
+};
 
-    client.query('SELECT username FROM MP_USER;', (err: any, res:any) => {
-      if (err) throw err;
-      for (let row of res.rows) {
-        console.log(JSON.stringify(row));
-      }
-      client.end();
-    });
-
-    // const users = await axios.get<Region[]>(`${config.URL_API_DATA}/regions`);
-    return new Promise<MPUser[]>(function(resolve, reject) {
-      resolve([]);
+export const getUserByUsername: (username : string) => Promise<MPUser | Error> = async (username) => {
+  try {
+    return queryDB(`SELECT * FROM MP_USER WHERE username = '${username}';`).then((users) => {
+      return users[0] as MPUser;
     });
   } catch (e) {
     console.error(e);
