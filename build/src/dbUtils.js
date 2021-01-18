@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.queryDB = void 0;
 const { Client } = require('pg');
-const queryDB = (query) => __awaiter(void 0, void 0, void 0, function* () {
+const queryDB = (query, params) => __awaiter(void 0, void 0, void 0, function* () {
     const client = new Client({
         connectionString: process.env.DATABASE_URL,
         ssl: {
@@ -19,9 +19,8 @@ const queryDB = (query) => __awaiter(void 0, void 0, void 0, function* () {
         }
     });
     client.connect();
-    return client.query(query).then((result) => {
+    return client.query(query, params).then((result) => {
         client.end();
-        console.log("Client ended");
         return result.rows;
     });
 });

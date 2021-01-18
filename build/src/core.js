@@ -23,7 +23,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserByUsername = exports.getUsers = exports.getLineChart = exports.getBarChart = exports.getRanking = exports.getCasesByRegionId = exports.getRegionById = exports.getRegions = exports.getHello = void 0;
+exports.createUser = exports.getUserByUsername = exports.getUsers = exports.getLineChart = exports.getBarChart = exports.getRanking = exports.getCasesByRegionId = exports.getRegionById = exports.getRegions = exports.getHello = void 0;
 const types_1 = require("./types");
 const dbUtils_1 = require("./dbUtils");
 const config_1 = __importDefault(require("../config"));
@@ -221,7 +221,7 @@ exports.getLineChart = getLineChart;
 //#endregion
 const getUsers = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        return dbUtils_1.queryDB('SELECT * FROM MP_USER;').then((users) => {
+        return yield dbUtils_1.queryDB('SELECT * FROM MP_USER;', []).then((users) => {
             return users;
         });
     }
@@ -233,9 +233,9 @@ const getUsers = () => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getUsers = getUsers;
-const getUserByUsername = (username) => __awaiter(void 0, void 0, void 0, function* () {
+const getUserByUsername = (user_name) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        return dbUtils_1.queryDB(`SELECT * FROM MP_USER WHERE username = '${username}';`).then((users) => {
+        return yield dbUtils_1.queryDB(`SELECT * FROM MP_USER WHERE username = $1;`, [user_name]).then((users) => {
             return users[0];
         });
     }
@@ -247,3 +247,23 @@ const getUserByUsername = (username) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.getUserByUsername = getUserByUsername;
+const createUser = (user) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        console.log("Inserting user:");
+        console.log(user);
+        return yield dbUtils_1.queryDB(`
+      INSERT INTO MP_USER 
+        (username, height, weight, diet_type, address, shopping_list_id)
+      VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;`, [user.username, user.height, user.weight, user.diet_type, user.address, user.shopping_list_id])
+            .then((users) => {
+            return users[0];
+        });
+    }
+    catch (e) {
+        console.error(e);
+        return {
+            error: e.toString(),
+        };
+    }
+});
+exports.createUser = createUser;

@@ -21,6 +21,7 @@ const router = express_1.default.Router();
 // router.get('/:parameter1/:parameter2', f);
 router.get('/', controller_1.hello); // Example
 router.get('/users', controller_1.users);
+router.post('/users', controller_1.postUser);
 router.get('/users/:username', controller_1.userByUsername);
 router.get('/regions', controller_1.regions);
 router.get('/region', controller_1.regionById);

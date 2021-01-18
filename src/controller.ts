@@ -18,7 +18,7 @@ import {
   getRanking,
   getRegionById,
   getRegions, getCasesByRegionId, getLineChart,
-  getUsers, getUserByUsername
+  getUsers, getUserByUsername, createUser
 } from './core';
 import {
   getDateFromRequest,
@@ -131,4 +131,10 @@ export const users = async (req: Request, res: Response) => {
 
 export const userByUsername = async (req: Request, res: Response) => {
   res.send(await getUserByUsername(req.params.username));
+};
+
+export const postUser = async (req: Request, res: Response) => {
+  console.log("req.body");
+  console.log(req.body);
+  res.send(await createUser(req.body));
 };

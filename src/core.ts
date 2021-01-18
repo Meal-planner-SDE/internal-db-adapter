@@ -244,7 +244,7 @@ export const getLineChart: (
 
 export const getUsers: () => Promise<MPUser[] | Error> = async () => {
   try {
-    return queryDB('SELECT * FROM MP_USER;').then((users) => {
+    return await queryDB('SELECT * FROM MP_USER;', []).then((users) => {
       return users as MPUser[];
     });
   } catch (e) {
@@ -255,11 +255,31 @@ export const getUsers: () => Promise<MPUser[] | Error> = async () => {
   }
 };
 
-export const getUserByUsername: (username : string) => Promise<MPUser | Error> = async (username) => {
+export const getUserByUsername: (user_name : string) => Promise<MPUser | Error> = async (user_name) => {
   try {
-    return queryDB(`SELECT * FROM MP_USER WHERE username = '${username}';`).then((users) => {
+    return await queryDB(`SELECT * FROM MP_USER WHERE username = $1;`, [user_name]).then((users) => {
       return users[0] as MPUser;
     });
+  } catch (e) {
+    console.error(e);
+    return {
+      error: e.toString(),
+    };
+  }
+};
+
+export const createUser: (user : MPUser) => Promise<MPUser | Error> = async (user) => {
+  try {
+    console.log("Inserting user:");
+    console.log(user);
+    return await queryDB(`
+      INSERT INTO MP_USER 
+        (username, height, weight, diet_type, address, shopping_list_id)
+      VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;`, 
+      [user.username, user.height, user.weight, user.diet_type, user.address, user.shopping_list_id])
+      .then((users) => {
+        return users[0] as MPUser;
+      });
   } catch (e) {
     console.error(e);
     return {
