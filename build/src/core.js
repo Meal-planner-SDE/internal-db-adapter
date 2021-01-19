@@ -23,7 +23,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateUser = exports.createUser = exports.getUserByUsername = exports.getUsers = void 0;
+exports.removeUserRecipe = exports.insertUserRecipes = exports.getUserRecipes = exports.updateUser = exports.insertUser = exports.getUserByUsername = exports.getUsers = void 0;
+const types_1 = require("./types");
 const dbUtils_1 = require("./dbUtils");
 // import config from '../config';
 const qs_1 = __importDefault(require("qs"));
@@ -251,9 +252,9 @@ const getUserByUsername = (user_name) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.getUserByUsername = getUserByUsername;
-const createUser = (user) => __awaiter(void 0, void 0, void 0, function* () {
+const insertUser = (user) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        let new_shopping_list = yield createShoppingList();
+        let new_shopping_list = yield insertShoppingList();
         user.shopping_list_id = new_shopping_list.shopping_list_id;
         let [query, params] = dbUtils_1.insertQuery("MP_USER", user);
         return yield dbUtils_1.queryDB(query, params)
@@ -268,7 +269,7 @@ const createUser = (user) => __awaiter(void 0, void 0, void 0, function* () {
         };
     }
 });
-exports.createUser = createUser;
+exports.insertUser = insertUser;
 const updateUser = (id, user) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let [query, params] = dbUtils_1.updateQuery("MP_USER", user, id);
@@ -286,7 +287,7 @@ const updateUser = (id, user) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.updateUser = updateUser;
-const createShoppingList = () => __awaiter(void 0, void 0, void 0, function* () {
+const insertShoppingList = () => __awaiter(void 0, void 0, void 0, function* () {
     let query = `
     INSERT INTO SHOPPING_LIST 
       DEFAULT VALUES
@@ -296,3 +297,60 @@ const createShoppingList = () => __awaiter(void 0, void 0, void 0, function* () 
         return shopping_lists[0];
     });
 });
+const getUserRecipes = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        return yield dbUtils_1.queryDB('SELECT recipe_id FROM SAVED_RECIPE WHERE mp_user_id = $1;', [id]).then((recipes) => {
+            return recipes;
+        });
+    }
+    catch (e) {
+        console.error(e);
+        return {
+            error: e.toString(),
+        };
+    }
+});
+exports.getUserRecipes = getUserRecipes;
+const insertUserRecipes = (mp_user_id, recipes) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let params = [];
+        let query = `
+      INSERT INTO SAVED_RECIPE (mp_user_id, recipe_id ) VALUES
+      ${recipes.map((recipe, i) => {
+            params.push(mp_user_id);
+            params.push(recipe.recipe_id);
+            return `($${2 * i + 1}, $${2 * i + 2})`;
+        }).join(',\n')}  RETURNING *`;
+        return yield dbUtils_1.queryDB(query, params)
+            .then((recipes) => {
+            return recipes.map((recipe) => new types_1.Recipe(recipe));
+        });
+    }
+    catch (e) {
+        console.error(e);
+        return {
+            error: e.toString(),
+        };
+    }
+});
+exports.insertUserRecipes = insertUserRecipes;
+const removeUserRecipe = (mp_user_id, recipe_id) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let params = [mp_user_id, recipe_id];
+        let query = `
+      DELETE FROM SAVED_RECIPE WHERE
+      mp_user_id = $1 AND recipe_id = $2
+      RETURNING *`;
+        return yield dbUtils_1.queryDB(query, params)
+            .then((recipes) => {
+            return recipes.map((recipe) => new types_1.Recipe(recipe));
+        });
+    }
+    catch (e) {
+        console.error(e);
+        return {
+            error: e.toString(),
+        };
+    }
+});
+exports.removeUserRecipe = removeUserRecipe;

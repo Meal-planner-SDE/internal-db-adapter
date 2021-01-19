@@ -19,7 +19,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.patchUser = exports.postUser = exports.userByUsername = exports.users = void 0;
+exports.deleteUserRecipe = exports.postUserRecipes = exports.userRecipes = exports.patchUser = exports.postUser = exports.userByUsername = exports.users = void 0;
 const core_1 = require("./core");
 const helper_1 = require("./helper");
 //#region --- EXAMPLE ---
@@ -109,7 +109,7 @@ const userByUsername = (req, res) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.userByUsername = userByUsername;
 const postUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.send(yield core_1.createUser(req.body));
+    res.send(yield core_1.insertUser(req.body));
 });
 exports.postUser = postUser;
 const patchUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -117,3 +117,19 @@ const patchUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.send(yield core_1.updateUser(id, req.body));
 });
 exports.patchUser = patchUser;
+const userRecipes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = helper_1.getIdFromRequest(req);
+    res.send(yield core_1.getUserRecipes(id));
+});
+exports.userRecipes = userRecipes;
+const postUserRecipes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = helper_1.getIdFromRequest(req);
+    res.send(yield core_1.insertUserRecipes(id, req.body));
+});
+exports.postUserRecipes = postUserRecipes;
+const deleteUserRecipe = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = helper_1.getIdFromRequest(req);
+    const rid = helper_1.getIdFromRequest(req, 'rid');
+    res.send(yield core_1.removeUserRecipe(id, rid));
+});
+exports.deleteUserRecipe = deleteUserRecipe;

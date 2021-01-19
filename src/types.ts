@@ -11,34 +11,34 @@ export const isError = (arg: any): arg is Error => {
   return arg && arg.error;
 };
 
-export interface Region {
-  id: number;
-  name: string;
-  lat: number;
-  long: number;
-}
+// export interface Region {
+//   id: number;
+//   name: string;
+//   lat: number;
+//   long: number;
+// }
 
-export interface CasesPerRegion {
-  region: Region;
-  cases: number;
-}
+// export interface CasesPerRegion {
+//   region: Region;
+//   cases: number;
+// }
 
-export interface Entry {
-  hospitalized_with_symptoms: number;
-  intensive_care: number;
-  total_hospitalized: number;
-  home_isolation: number;
-  total_positive: number;
-  total_positive_variation: number;
-  new_positives: number;
-  resigned_cured: number;
-  deceased: number;
-  cases_from_suspected_diagnostic: number;
-  cases_from_screening: number;
-  total_cases: number;
-  tampons: number;
-  cases_tested: number;
-}
+// export interface Entry {
+//   hospitalized_with_symptoms: number;
+//   intensive_care: number;
+//   total_hospitalized: number;
+//   home_isolation: number;
+//   total_positive: number;
+//   total_positive_variation: number;
+//   new_positives: number;
+//   resigned_cured: number;
+//   deceased: number;
+//   cases_from_suspected_diagnostic: number;
+//   cases_from_screening: number;
+//   total_cases: number;
+//   tampons: number;
+//   cases_tested: number;
+// }
 
 export interface MPUser {
   mp_user_id: number,
@@ -55,5 +55,15 @@ export interface MPUser {
 }
 
 export interface ShoppingList {
-  shopping_list_id: number;
+  shopping_list_id: number
 }
+export interface RecipeRaw {
+  recipe_id: number;
+}
+export class Recipe {
+  recipe_id: number;
+  constructor (recipe:RecipeRaw) {
+    this.recipe_id = recipe.recipe_id;
+  }
+}
+

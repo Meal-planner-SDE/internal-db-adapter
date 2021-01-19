@@ -16,7 +16,10 @@ import {
   // isError,
   // Region, 
   MPUser, 
-  ShoppingList } from './types';
+  ShoppingList,
+  RecipeRaw, 
+  Recipe 
+} from './types';
 import { queryDB, insertQuery, updateQuery } from './dbUtils';
 // import config from '../config';
 import qs from 'qs';
@@ -274,9 +277,9 @@ export const getUserByUsername: (user_name : string) => Promise<MPUser | Error> 
   }
 };
 
-export const createUser: (user : MPUser) => Promise<MPUser | Error> = async (user) => {
+export const insertUser: (user : MPUser) => Promise<MPUser | Error> = async (user) => {
   try {
-    let new_shopping_list = await createShoppingList();
+    let new_shopping_list = await insertShoppingList();
     user.shopping_list_id = new_shopping_list.shopping_list_id;
 
 
@@ -299,7 +302,7 @@ export const updateUser: (id: number, user : MPUser) => Promise<MPUser | Error> 
     let [query, params] = updateQuery("MP_USER", user, id);
     console.log(query, params);
 
-    
+
     return await queryDB(query, params)
     .then((users) => {
       return users[0] as MPUser;
@@ -312,7 +315,7 @@ export const updateUser: (id: number, user : MPUser) => Promise<MPUser | Error> 
   }
 };
 
-const createShoppingList: () => Promise<ShoppingList> = async () => {
+const insertShoppingList: () => Promise<ShoppingList> = async () => {
   let query = `
     INSERT INTO SHOPPING_LIST 
       DEFAULT VALUES
@@ -322,3 +325,63 @@ const createShoppingList: () => Promise<ShoppingList> = async () => {
       return shopping_lists[0] as ShoppingList;
     });
 }
+
+export const getUserRecipes: (id:number) => Promise<Recipe[] | Error> = async (id) => {
+  try {
+    return await queryDB('SELECT recipe_id FROM SAVED_RECIPE WHERE mp_user_id = $1;', [id]).then((recipes) => {
+      return recipes as Recipe[];
+    });
+  } catch (e) {
+    console.error(e);
+    return {
+      error: e.toString(),
+    };
+  }
+};
+
+export const insertUserRecipes: (mp_user_id: number, recipes : Recipe[]) => Promise<Recipe[] | Error> = async (
+  mp_user_id, recipes
+) => {
+  try {
+    let params = [] as any[];
+    let query = `
+      INSERT INTO SAVED_RECIPE (mp_user_id, recipe_id ) VALUES
+      ${recipes.map(
+        (recipe, i) => {
+          params.push(mp_user_id);
+          params.push(recipe.recipe_id);
+          return `($${2*i + 1}, $${2*i + 2})`
+        }
+      ).join(',\n')}  RETURNING *`;
+    return await queryDB(query, params)
+    .then((recipes) => {
+      return (recipes as RecipeRaw[]).map((recipe) => new Recipe(recipe));
+    });
+  } catch (e) {
+    console.error(e);
+    return {
+      error: e.toString(),
+    };
+  }
+};
+
+export const removeUserRecipe: (mp_user_id: number, recipe_id : number) => Promise<Recipe[] | Error> = async (
+  mp_user_id, recipe_id
+) => {
+  try {
+    let params = [mp_user_id, recipe_id];
+    let query = `
+      DELETE FROM SAVED_RECIPE WHERE
+      mp_user_id = $1 AND recipe_id = $2
+      RETURNING *`;
+    return await queryDB(query, params)
+    .then((recipes) => {
+      return (recipes as RecipeRaw[]).map((recipe) => new Recipe(recipe));
+    });
+  } catch (e) {
+    console.error(e);
+    return {
+      error: e.toString(),
+    };
+  }
+};

@@ -18,7 +18,8 @@ import {
   // getRanking,
   // getRegionById,
   // getRegions, getCasesByRegionId, getLineChart,
-  getUsers, getUserByUsername, createUser, updateUser
+  getUsers, getUserByUsername, insertUser, updateUser,
+  getUserRecipes, insertUserRecipes, removeUserRecipe
 } from './core';
 import {
   // getDateFromRequest,
@@ -134,10 +135,26 @@ export const userByUsername = async (req: Request, res: Response) => {
 };
 
 export const postUser = async (req: Request, res: Response) => {
-  res.send(await createUser(req.body));
+  res.send(await insertUser(req.body));
 };
 
 export const patchUser = async (req: Request, res: Response) => {
   const id = getIdFromRequest(req);
   res.send(await updateUser(id, req.body));
+};
+
+export const userRecipes = async (req: Request, res: Response) => {
+  const id = getIdFromRequest(req);
+  res.send(await getUserRecipes(id));
+};
+
+export const postUserRecipes = async (req: Request, res: Response) => {
+  const id = getIdFromRequest(req);
+  res.send(await insertUserRecipes(id, req.body));
+};
+
+export const deleteUserRecipe = async (req: Request, res: Response) => {
+  const id = getIdFromRequest(req);
+  const rid = getIdFromRequest(req, 'rid');
+  res.send(await removeUserRecipe(id, rid));
 };

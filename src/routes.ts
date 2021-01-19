@@ -21,7 +21,11 @@ import {
   users,
   postUser,
   patchUser,
-  userByUsername
+  userByUsername,
+
+  userRecipes,
+  postUserRecipes,
+  deleteUserRecipe,
 } from './controller';
 
 const router = express.Router();
@@ -37,6 +41,11 @@ router.get('/users', users);
 router.post('/users', postUser);
 router.patch('/users/:id', patchUser);
 router.get('/users/:username', userByUsername);
+
+
+router.get('/users/:id/recipes', userRecipes);
+router.post('/users/:id/recipes', postUserRecipes);
+router.delete('/users/:id/recipes/:rid', deleteUserRecipe);
 
 // router.get('/regions', regions);
 // router.get('/region', regionById);

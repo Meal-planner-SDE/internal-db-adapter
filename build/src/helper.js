@@ -46,8 +46,8 @@ exports.parseNumber = parseNumber;
  * @return the id if the parameter is correct and
  * available, false otherwise
  */
-const getIdFromRequest = (req) => {
-    return exports.parseNumber(req.params.id);
+const getIdFromRequest = (req, id_name) => {
+    return exports.parseNumber(req.params[id_name || "id"]);
 };
 exports.getIdFromRequest = getIdFromRequest;
 /**
