@@ -19,14 +19,15 @@ const router = express_1.default.Router();
 // Possible methods: .get, .post, .put, .patch, .delete
 // To add URL parameters (Doable for any method! Not only for GET):
 // router.get('/:parameter1/:parameter2', f);
-router.get('/', controller_1.hello); // Example
+// router.get('/', hello); // Example
 router.get('/users', controller_1.users);
 router.post('/users', controller_1.postUser);
+router.patch('/users/:id', controller_1.patchUser);
 router.get('/users/:username', controller_1.userByUsername);
-router.get('/regions', controller_1.regions);
-router.get('/region', controller_1.regionById);
-router.get('/cases', controller_1.casesByRegionId);
-router.get('/ranking', controller_1.ranking);
-router.get('/charts/bar', controller_1.barChart);
-router.get('/charts/line', controller_1.lineChart);
+// router.get('/regions', regions);
+// router.get('/region', regionById);
+// router.get('/cases', casesByRegionId);
+// router.get('/ranking', ranking);
+// router.get('/charts/bar', barChart);
+// router.get('/charts/line', lineChart);
 exports.default = router;

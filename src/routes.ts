@@ -11,15 +11,16 @@
 
 import express from 'express';
 import {
-  hello,
-  ranking,
-  regionById,
-  regions,
-  barChart,
-  casesByRegionId,
-  lineChart,
+  // hello,
+  // ranking,
+  // regionById,
+  // regions,
+  // barChart,
+  // casesByRegionId,
+  // lineChart,
   users,
   postUser,
+  patchUser,
   userByUsername
 } from './controller';
 
@@ -30,19 +31,20 @@ const router = express.Router();
 // To add URL parameters (Doable for any method! Not only for GET):
 // router.get('/:parameter1/:parameter2', f);
 
-router.get('/', hello); // Example
+// router.get('/', hello); // Example
 
 router.get('/users', users);
 router.post('/users', postUser);
+router.patch('/users/:id', patchUser);
 router.get('/users/:username', userByUsername);
 
-router.get('/regions', regions);
-router.get('/region', regionById);
-router.get('/cases', casesByRegionId);
+// router.get('/regions', regions);
+// router.get('/region', regionById);
+// router.get('/cases', casesByRegionId);
 
-router.get('/ranking', ranking);
+// router.get('/ranking', ranking);
 
-router.get('/charts/bar', barChart);
-router.get('/charts/line', lineChart);
+// router.get('/charts/bar', barChart);
+// router.get('/charts/line', lineChart);
 
 export default router;

@@ -41,11 +41,19 @@ export interface Entry {
 }
 
 export interface MPUser {
-  mp_user_id: number;
-  username: string;
-  height: number;
-  weight: number;
-  diet_type: string;
-  address: string;
+  mp_user_id: number,
+  username: string,
+  height: number,
+  weight: number,
+  sex: string,
+  birth_year: number,
+  diet_type: string,
+  activity_factor: string,
+  address: string,
+  shopping_list_id: number,
+  current_weekly_plan_id: number
+}
+
+export interface ShoppingList {
   shopping_list_id: number;
 }

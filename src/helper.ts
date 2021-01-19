@@ -32,14 +32,27 @@ export const getNumberFromRequest: (req: Request, param: string) => number | fal
   }
 };
 
+export const parseNumber: (param: string) => number = (
+  param
+) => {
+  if (typeof param !== 'string') {
+    throw new Error(`${param} must be a string`);
+  }
+  try {
+    return parseInt(param);
+  } catch (e) {
+     throw new Error(`Found ${param}, expecting an integer`);
+  }
+};
+
 /**
  * Extract id from the request query-string
  * @param req The request (as given in the controller)
  * @return the id if the parameter is correct and
  * available, false otherwise
  */
-export const getIdFromRequest: (req: Request) => number | false = (req) => {
-  return getNumberFromRequest(req, 'id');
+export const getIdFromRequest: (req: Request) => number = (req) => {
+  return parseNumber(req.params.id);
 };
 
 /**

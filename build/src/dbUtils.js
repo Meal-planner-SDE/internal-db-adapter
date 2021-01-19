@@ -9,8 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.queryDB = void 0;
+exports.updateQuery = exports.insertQuery = exports.queryDB = void 0;
 const { Client } = require('pg');
+const getIdField = (table) => {
+    return table.toLowerCase().concat('_id');
+};
 const queryDB = (query, params) => __awaiter(void 0, void 0, void 0, function* () {
     const client = new Client({
         connectionString: process.env.DATABASE_URL,
@@ -25,3 +28,45 @@ const queryDB = (query, params) => __awaiter(void 0, void 0, void 0, function* (
     });
 });
 exports.queryDB = queryDB;
+const insertQuery = (table, entity) => {
+    let fields = [];
+    let params = [];
+    let id_field = getIdField(table);
+    for (const [property, value] of Object.entries(entity)) {
+        if (property != id_field && value != null) {
+            fields.push(property);
+            params.push(value);
+        }
+    }
+    if (params.length == 0) {
+        throw new Error("No field given");
+    }
+    return [`
+    INSERT INTO MP_USER 
+      (${fields.join(', ')})
+    VALUES (${params.map((_, i) => `$${i + 1}`).join(`, `)})
+    
+    RETURNING *; `, params];
+};
+exports.insertQuery = insertQuery;
+const updateQuery = (table, entity, id) => {
+    let fields = [];
+    let params = [];
+    let id_field = getIdField(table);
+    for (const [property, value] of Object.entries(entity)) {
+        if (property != id_field && value != null) {
+            fields.push(property);
+            params.push(value);
+        }
+    }
+    if (params.length == 0) {
+        throw new Error("No field to update found");
+    }
+    params.push(id);
+    return [`
+    UPDATE MP_USER SET 
+      ${fields.map((field, i) => `${field} = $${i + 1}`).join(',\n')}
+    WHERE mp_user_id = $${params.length}
+    RETURNING *;`, params];
+};
+exports.updateQuery = updateQuery;

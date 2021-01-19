@@ -6,7 +6,7 @@
  *   of the other files.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCurrentDate = exports.getDateFromRequest = exports.getIdFromRequest = exports.getNumberFromRequest = void 0;
+exports.getCurrentDate = exports.getDateFromRequest = exports.getIdFromRequest = exports.parseNumber = exports.getNumberFromRequest = void 0;
 /**
  * Extract a specific parameter from the query-string
  * @param req The request (as given in the controller)
@@ -28,6 +28,18 @@ const getNumberFromRequest = (req, param) => {
     }
 };
 exports.getNumberFromRequest = getNumberFromRequest;
+const parseNumber = (param) => {
+    if (typeof param !== 'string') {
+        throw new Error(`${param} must be a string`);
+    }
+    try {
+        return parseInt(param);
+    }
+    catch (e) {
+        throw new Error(`Found ${param}, expecting an integer`);
+    }
+};
+exports.parseNumber = parseNumber;
 /**
  * Extract id from the request query-string
  * @param req The request (as given in the controller)
@@ -35,7 +47,7 @@ exports.getNumberFromRequest = getNumberFromRequest;
  * available, false otherwise
  */
 const getIdFromRequest = (req) => {
-    return exports.getNumberFromRequest(req, 'id');
+    return exports.parseNumber(req.params.id);
 };
 exports.getIdFromRequest = getIdFromRequest;
 /**

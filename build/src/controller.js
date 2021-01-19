@@ -19,98 +19,86 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.postUser = exports.userByUsername = exports.users = exports.lineChart = exports.barChart = exports.ranking = exports.casesByRegionId = exports.regionById = exports.regions = exports.hello = void 0;
-const types_1 = require("./types");
+exports.patchUser = exports.postUser = exports.userByUsername = exports.users = void 0;
 const core_1 = require("./core");
 const helper_1 = require("./helper");
 //#region --- EXAMPLE ---
-const hello = (req, res) => {
-    // If in the URL (GET request) e.g. localhost:8080/?name=pippo
-    const name = req.query['name'];
-    // If in body of the request (as json or form-data)
-    // const name = req.body['name'];
-    // If in the URL as a parameter e.g. localhost:8080/pippo/ and route defined as '/:name'
-    // const name = req.params['name'];
-    if (name != null && typeof name === 'string') {
-        res.send(core_1.getHello(name));
-    }
-    else {
-        res.status(400);
-        res.send({ error: 'Invalid name format!' });
-    }
-};
-exports.hello = hello;
+// export const hello = (req: Request, res: Response) => {
+//   // If in the URL (GET request) e.g. localhost:8080/?name=pippo
+//   const name = req.query['name'];
+//   // If in body of the request (as json or form-data)
+//   // const name = req.body['name'];
+//   // If in the URL as a parameter e.g. localhost:8080/pippo/ and route defined as '/:name'
+//   // const name = req.params['name'];
+//   if (name != null && typeof name === 'string') {
+//     res.send(getHello(name));
+//   } else {
+//     res.status(400);
+//     res.send({ error: 'Invalid name format!' });
+//   }
+// };
 //#endregion
 //#region --- REGIONS and CASES ---
-const regions = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.send(yield core_1.getRegions());
-});
-exports.regions = regions;
-const regionById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const id = helper_1.getIdFromRequest(req);
-    if (id !== false) {
-        res.send(yield core_1.getRegionById(id));
-    }
-    else {
-        res.status(400);
-        res.send({ error: 'Invalid ID format!' });
-    }
-});
-exports.regionById = regionById;
-const casesByRegionId = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const id = helper_1.getIdFromRequest(req);
-    if (id !== false) {
-        const date = helper_1.getDateFromRequest(req);
-        res.send(yield core_1.getCasesByRegionId(id, date.year, date.month, date.day));
-    }
-    else {
-        res.status(400);
-        res.send({ error: 'Invalid ID format!' });
-    }
-});
-exports.casesByRegionId = casesByRegionId;
+// export const regions = async (req: Request, res: Response) => {
+//   res.send(await getRegions());
+// };
+// export const regionById = async (req: Request, res: Response) => {
+//   const id = getIdFromRequest(req);
+//   if (id !== false) {
+//     res.send(await getRegionById(id));
+//   } else {
+//     res.status(400);
+//     res.send({ error: 'Invalid ID format!' });
+//   }
+// };
+// export const casesByRegionId = async (req: Request, res: Response) => {
+//   const id = getIdFromRequest(req);
+//   if (id !== false) {
+//     const date = getDateFromRequest(req);
+//     res.send(await getCasesByRegionId(id, date.year, date.month, date.day));
+//   } else {
+//     res.status(400);
+//     res.send({ error: 'Invalid ID format!' });
+//   }
+// };
 //#endregion
 //#region --- LOCAL ELABORATIONS ---
-const ranking = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const date = helper_1.getDateFromRequest(req);
-    let n = helper_1.getNumberFromRequest(req, 'n');
-    if (n === false) {
-        n = 5;
-    }
-    let ord = req.query['ord'];
-    if (ord !== 'asc') {
-        ord = 'desc';
-    }
-    res.send(yield core_1.getRanking(n, ord, date.year, date.month, date.day));
-});
-exports.ranking = ranking;
+// export const ranking = async (req: Request, res: Response) => {
+//   const date = getDateFromRequest(req);
+//   let n = getNumberFromRequest(req, 'n');
+//   if (n === false) {
+//     n = 5;
+//   }
+//   let ord = req.query['ord'];
+//   if (ord !== 'asc') {
+//     ord = 'desc';
+//   }
+//   res.send(await getRanking(n, ord, date.year, date.month, date.day));
+// };
 //#endregion
 //#region --- CHARTS ---
-const barChart = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const date = helper_1.getDateFromRequest(req);
-    const chart = yield core_1.getBarChart(date.year, date.month, date.day);
-    if (!types_1.isError(chart)) {
-        res.contentType('image/png');
-    }
-    res.send(chart);
-});
-exports.barChart = barChart;
-const lineChart = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const id = helper_1.getIdFromRequest(req);
-    if (id !== false) {
-        const date = helper_1.getDateFromRequest(req);
-        const chart = yield core_1.getLineChart(id, date.year, date.month);
-        if (!types_1.isError(chart)) {
-            res.contentType('image/png');
-        }
-        res.send(chart);
-    }
-    else {
-        res.status(400);
-        res.send({ error: 'Invalid ID format!' });
-    }
-});
-exports.lineChart = lineChart;
+// export const barChart = async (req: Request, res: Response) => {
+//   const date = getDateFromRequest(req);
+//   const chart = await getBarChart(date.year, date.month, date.day);
+//   if (!isError(chart)) {
+//     res.contentType('image/png');
+//   }
+//   res.send(chart);
+// };
+// export const lineChart = async (req: Request, res: Response) => {
+//   const id = getIdFromRequest(req);
+//   if (id !== false) {
+//     const date = getDateFromRequest(req);
+//     const chart = await getLineChart(id, date.year, date.month);
+//     if (!isError(chart)) {
+//       res.contentType('image/png');
+//     }
+//     res.send(chart);
+//   } else {
+//     res.status(400);
+//     res.send({ error: 'Invalid ID format!' });
+//   }
+// };
 //#endregion
 const users = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.send(yield core_1.getUsers());
@@ -121,8 +109,11 @@ const userByUsername = (req, res) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.userByUsername = userByUsername;
 const postUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("req.body");
-    console.log(req.body);
     res.send(yield core_1.createUser(req.body));
 });
 exports.postUser = postUser;
+const patchUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = helper_1.getIdFromRequest(req);
+    res.send(yield core_1.updateUser(id, req.body));
+});
+exports.patchUser = patchUser;
