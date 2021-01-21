@@ -26,6 +26,10 @@ import {
   userRecipes,
   postUserRecipes,
   deleteUserRecipe,
+
+  userShoppingListEntries,
+  patchUserShoppingListEntry
+
 } from './controller';
 
 const router = express.Router();
@@ -46,6 +50,10 @@ router.get('/users/:username', userByUsername);
 router.get('/users/:id/recipes', userRecipes);
 router.post('/users/:id/recipes', postUserRecipes);
 router.delete('/users/:id/recipes/:rid', deleteUserRecipe);
+
+
+router.get('/users/:id/shoppingList', userShoppingListEntries);
+router.patch('/users/:id/shoppingList', patchUserShoppingListEntry);
 
 // router.get('/regions', regions);
 // router.get('/region', regionById);

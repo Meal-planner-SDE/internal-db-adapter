@@ -27,6 +27,8 @@ router.get('/users/:username', controller_1.userByUsername);
 router.get('/users/:id/recipes', controller_1.userRecipes);
 router.post('/users/:id/recipes', controller_1.postUserRecipes);
 router.delete('/users/:id/recipes/:rid', controller_1.deleteUserRecipe);
+router.get('/users/:id/shoppingList', controller_1.userShoppingListEntries);
+router.patch('/users/:id/shoppingList', controller_1.patchUserShoppingListEntry);
 // router.get('/regions', regions);
 // router.get('/region', regionById);
 // router.get('/cases', casesByRegionId);

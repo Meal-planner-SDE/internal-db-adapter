@@ -17,8 +17,9 @@ import {
   // Region, 
   MPUser, 
   ShoppingList,
-  RecipeRaw, 
-  Recipe 
+  ShoppingListEntry,
+  Recipe, 
+  isError
 } from './types';
 import { queryDB, insertQuery, updateQuery } from './dbUtils';
 // import config from '../config';
@@ -31,224 +32,11 @@ axios.defaults.paramsSerializer = (params) => {
 };
 
 
-    
-//#region --- EXAMPLE ---
-
-// export const getHello: (name: string) => { text: string } = (name) => {
-//   return {
-//     text: `Hello ${name}`,
-//   };
-// };
-
-//#endregion
-
-//#region --- REGIONS and CASES ---
-
-// export const getRegions: () => Promise<Region[] | Error> = async () => {
-//   try {
-//     const regions = await axios.get<Region[]>(`${config.URL_API_DATA}/regions`);
-//     return regions.data;
-//   } catch (e) {
-//     console.error(e);
-//     return {
-//       error: e.toString(),
-//     };
-//   }
-// };
-
-// export const getRegionById: (id: number) => Promise<Region | Error> = async (id) => {
-//   try {
-//     const region = await axios.get<Region>(`${config.URL_API_DATA}/region/${id}`);
-//     return region.data;
-//   } catch (e) {
-//     console.error(e);
-//     return {
-//       error: e,
-//     };
-//   }
-// };
-
-// export const getCasesByRegionId: (
-//   id: number,
-//   year: number,
-//   month: number,
-//   day: number
-// ) => Promise<Entry | Error> = async (id, year, month, day) => {
-//   try {
-//     const cases = await axios.get<Entry>(`${config.URL_API_DATA}/region/${id}/cases/${year}/${month}/${day}`);
-//     return cases.data;
-//   } catch (e) {
-//     console.error(e);
-//     return {
-//       error: e,
-//     };
-//   }
-// };
-
-//#endregion
-
-//#region --- LOCAL ELABORATIONS ---
-
-// export const getRanking: (
-//   n: number,
-//   ord: string,
-//   year: number,
-//   month: number,
-//   day: number
-// ) => Promise<CasesPerRegion[]> = async (n, ord, year, month, day) => {
-//   const regions = await getRegions();
-
-//   let ranks: CasesPerRegion[] = [];
-//   if (!isError(regions)) {
-//     for (let i = 0; i < regions.length; i++) {
-//       const cases = await getCasesByRegionId(regions[i].id, year, month, day);
-//       if (!isError(cases)) {
-//         ranks.push({
-//           region: regions[i],
-//           cases: cases.total_positive,
-//         });
-//       }
-//     }
-//   }
-
-//   ranks = ranks.sort((a: CasesPerRegion, b: CasesPerRegion) => b.cases - a.cases);
-//   if (ord === 'asc') {
-//     ranks = ranks.reverse();
-//   }
-//   return ranks.slice(0, n);
-// };
-
-//#endregion
-
-//#region --- CHARTS ---
-
-// export const getBarChart: (
-//   year: number,
-//   month: number,
-//   day: number
-// ) => Promise<File | Error> = async (year, month, day) => {
-//   const regions = await getRegions();
-
-//   if (!isError(regions)) {
-//     let labels = '';
-//     let data = '';
-//     let maxCases = 10000;
-
-//     // For each region, take the total number of positives and create the parameters query
-//     for (let i = 0; i < regions.length; i++) {
-//       const cases = await getCasesByRegionId(regions[i].id, year, month, day);
-//       if (!isError(cases)) {
-//         labels += regions[i].name.replace('P.A. ', '').slice(0, 4) + '.|';
-//         data += cases.total_positive + ',';
-//         if (cases.total_positive > maxCases) {
-//           maxCases = cases.total_positive;
-//         }
-//       }
-//     }
-
-//     // remove trailing comma and pipe
-//     if (labels.length > 0) {
-//       labels = labels.slice(0, -1);
-//     }
-//     if (data.length > 0) {
-//       data = data.slice(0, -1);
-//     }
-
-//     // Let's make the request to google chart API to create the chart
-//     try {
-//       const response = await axios.get<File>('https://chart.googleapis.com/chart', {
-//         responseType: 'arraybuffer', // Needed because the response is not a json but a binary file!
-//         params: {
-//           cht: 'bvg',
-//           chs: `700x250`,
-//           chtt: 'Covid Infections',
-//           chds: `0,${maxCases}`,
-//           chd: `t:${data}`,
-//           chco: '118ab2',
-//           chl: `${labels}`,
-//           chxt: 'x,y',
-//           chxr: `1,0,${maxCases}`,
-//         },
-//       });
-
-//       return response.data;
-//     } catch (e) {
-//       console.error(e);
-//       return {
-//         error: e,
-//       };
-//     }
-//   } else {
-//     return regions; // It's an error! :( We return it as is.
-//   }
-// };
-
-// export const getLineChart: (
-//   id: number,
-//   year: number,
-//   month: number,
-// ) => Promise<File | Error> = async (id, year, month) => {
-//   const region = await getRegionById(id);
-
-//   if (!isError(region)) {
-//     let labels = '';
-//     let data = '';
-//     let maxCases = 10000;
-
-//     // Get cases for each day of the month
-//     for (let i = 1; i <= 31; i++) {
-//       const cases = await getCasesByRegionId(region.id, year, month, i);
-//       // If the day does not exists, it will be an error,
-//       // so even if we're trying to get 31th of February,
-//       // it will not be added to the labels and data!
-//       if (!isError(cases)) {
-//         labels += i + '|';
-//         data += cases.total_positive + ',';
-//         if (cases.total_positive > maxCases) {
-//           maxCases = cases.total_positive;
-//         }
-//       }
-//     }
-
-//     // remove trailing comma and pipe
-//     if (labels.length > 0) {
-//       labels = labels.slice(0, -1);
-//     }
-//     if (data.length > 0) {
-//       data = data.slice(0, -1);
-//     }
-
-//     // Let's make the request to google chart API to create the chart
-//     try {
-//       const response = await axios.get<File>('https://chart.googleapis.com/chart', {
-//         responseType: 'arraybuffer', // Needed because the response is not a json but a binary file!
-//         params: {
-//           cht: 'lc',
-//           chs: `600x250`,
-//           chtt: 'Covid Infections',
-//           chds: `0,${maxCases}`,
-//           chd: `t:${data}`,
-//           chdl: region.name,
-//           chco: '118ab2',
-//           chl: `${labels}`,
-//           chxt: 'x,y',
-//           chxr: `1,0,${maxCases}`,
-//         },
-//       });
-
-//       return response.data;
-//     } catch (e) {
-//       console.error(e);
-//       return {
-//         error: e,
-//       };
-//     }
-//   } else {
-//     return region; // It's an error! :( We return it as is.
-//   }
-// };
-
-//#endregion
+const checkUserExists = async  (id: number) => {
+  let user = await getUserById(id); // if user does not exists throws an error
+  if (isError(user))
+    throw user.error;
+}
 
 
 export const getUsers: () => Promise<MPUser[] | Error> = async () => {
@@ -267,6 +55,23 @@ export const getUsers: () => Promise<MPUser[] | Error> = async () => {
 export const getUserByUsername: (user_name : string) => Promise<MPUser | Error> = async (user_name) => {
   try {
     return await queryDB(`SELECT * FROM MP_USER WHERE username = $1;`, [user_name]).then((users) => {
+      if (users.length == 0)
+        throw new Error("User not found");
+      return users[0] as MPUser;
+    });
+  } catch (e) {
+    console.error(e);
+    return {
+      error: e.toString(),
+    };
+  }
+};
+
+export const getUserById: (mp_user_id : number) => Promise<MPUser | Error> = async (mp_user_id) => {
+  try {
+    return await queryDB(`SELECT * FROM MP_USER WHERE mp_user_id = $1;`, [mp_user_id]).then((users) => {
+      if (users.length == 0) 
+        throw new Error("User not found");
       return users[0] as MPUser;
     });
   } catch (e) {
@@ -284,7 +89,7 @@ export const insertUser: (user : MPUser) => Promise<MPUser | Error> = async (use
 
 
     let [query, params] = insertQuery("MP_USER", user);
-            
+    console.log(query);
     return await queryDB(query, params)
     .then((users) => {
       return users[0] as MPUser;
@@ -298,13 +103,15 @@ export const insertUser: (user : MPUser) => Promise<MPUser | Error> = async (use
 };
 
 export const updateUser: (id: number, user : MPUser) => Promise<MPUser | Error> = async (id, user) => {
-  try {
-    let [query, params] = updateQuery("MP_USER", user, id);
+  try { 
+    let [query, params] = updateQuery("MP_USER", user, id, ["shopping_list_id"]);
     console.log(query, params);
 
 
     return await queryDB(query, params)
     .then((users) => {
+      if (users.length == 0)
+        throw new Error("User not found");
       return users[0] as MPUser;
     });
   } catch (e) {
@@ -326,9 +133,10 @@ const insertShoppingList: () => Promise<ShoppingList> = async () => {
     });
 }
 
-export const getUserRecipes: (id:number) => Promise<Recipe[] | Error> = async (id) => {
+export const getUserRecipes: (mp_user_id:number) => Promise<Recipe[] | Error> = async (mp_user_id) => {
   try {
-    return await queryDB('SELECT recipe_id FROM SAVED_RECIPE WHERE mp_user_id = $1;', [id]).then((recipes) => {
+    await checkUserExists(mp_user_id)
+    return await queryDB('SELECT recipe_id FROM SAVED_RECIPE WHERE mp_user_id = $1;', [mp_user_id]).then((recipes) => {
       return recipes as Recipe[];
     });
   } catch (e) {
@@ -352,10 +160,10 @@ export const insertUserRecipes: (mp_user_id: number, recipes : Recipe[]) => Prom
           params.push(recipe.recipe_id);
           return `($${2*i + 1}, $${2*i + 2})`
         }
-      ).join(',\n')}  RETURNING *`;
+      ).join(',\n')}  RETURNING recipe_id`;
     return await queryDB(query, params)
     .then((recipes) => {
-      return (recipes as RecipeRaw[]).map((recipe) => new Recipe(recipe));
+      return recipes as Recipe[];
     });
   } catch (e) {
     console.error(e);
@@ -369,14 +177,18 @@ export const removeUserRecipe: (mp_user_id: number, recipe_id : number) => Promi
   mp_user_id, recipe_id
 ) => {
   try {
+    await checkUserExists(mp_user_id); // if user does not exists throws an error
+    
     let params = [mp_user_id, recipe_id];
     let query = `
       DELETE FROM SAVED_RECIPE WHERE
       mp_user_id = $1 AND recipe_id = $2
-      RETURNING *`;
+      RETURNING recipe_id`;
     return await queryDB(query, params)
     .then((recipes) => {
-      return (recipes as RecipeRaw[]).map((recipe) => new Recipe(recipe));
+      if (recipes.length == 0)
+        throw new Error(`The user with id ${mp_user_id} has not saved recipe with id ${recipe_id}`);
+      return recipes as Recipe[];
     });
   } catch (e) {
     console.error(e);
@@ -385,3 +197,68 @@ export const removeUserRecipe: (mp_user_id: number, recipe_id : number) => Promi
     };
   }
 };
+
+export const getUserShoppingListEntries: (id:number) => Promise<ShoppingListEntry[] | Error> = async (id) => {
+  try {
+    await checkUserExists(id);
+    return await queryDB(`SELECT * FROM SHOPPING_LIST_ENTRY WHERE shopping_list_id = 
+      (SELECT MP_USER.shopping_list_id FROM MP_USER WHERE mp_user_id = $1);`, [id]).then((entries) => {
+      return entries as ShoppingListEntry[];
+    });
+  } catch (e) {
+    console.error(e);
+    return {
+      error: e.toString(),
+    };
+  }
+};
+
+
+export const updateUserShoppingListEntry: (mp_user_id: number,
+   shopping_list_entry : ShoppingListEntry) => Promise<ShoppingListEntry | Error> = async (
+  mp_user_id, shopping_list_entry
+) => {
+  try {
+    // let entry = await getUserShoppingListEntry(mp_user_id, shopping_list_entry.ingredient_id);
+
+    // if (entry === undefined){
+    //   // insert new tuple
+    // } else {
+    //   // check measures 
+    // }
+    let user = await getUserById(mp_user_id);
+    if (isError(user)){
+      return user;
+    }
+    
+    let fields = ["ingredient_id", "quantity", "measure"]
+    let params = [shopping_list_entry.ingredient_id, 
+      shopping_list_entry.quantity, shopping_list_entry.measure]
+    let query = `
+    INSERT INTO SHOPPING_LIST_ENTRY (shopping_list_id, ${fields.join(`, `)}) 
+    VALUES ($1, ${params.map((param, i) => `$${i+2}` )})
+    ON CONFLICT (ingredient_id) DO UPDATE
+      SET ${fields.map((field, i) => 
+        `${field} = ${(field == `quantity` ? `SHOPPING_LIST_ENTRY.quantity + `: ``)} $${params.length + i + 2}`)}
+      WHERE SHOPPING_LIST_ENTRY.measure = $${params.length + fields.length + 2}
+    RETURNING *;`;
+    let user_id_param = [user.shopping_list_id] as (string | number)[];
+    return await queryDB(query, user_id_param.concat(params).concat(params).concat([shopping_list_entry.measure]))
+    .then((entries) => {
+      if (entries.length == 0)
+        throw new Error("The measure conflicts with the one already in the list")
+      return entries[0] as ShoppingListEntry;
+    });
+  } catch (e) {
+    console.error(e);
+    return {
+      error: e.toString(),
+    };
+  }
+};
+
+// export const removeUserShoppingListEntry: (mp_user_id: number, ingredient_id : number) => Promise<ShoppingListEntry | Error> = async (
+//   mp_user_id, ingredient_id
+// ) => {
+//   return {} as ShoppingListEntry;
+// }

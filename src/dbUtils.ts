@@ -45,14 +45,15 @@ export const insertQuery: (table: string, entity: Object) => [string, string[]] 
     RETURNING *; `, params];
 }
 
-export const updateQuery: (table: string, entity:Object, id:number) => [string, string[]] = (
-    table, entity, id
+export const updateQuery: (table: string, entity:Object, id:number, non_update_fields?: string[]) => [string, string[]] = (
+    table, entity, id, non_update_fields?
 ) => {
+    non_update_fields ||= [];
     let fields = [];
     let params = [];
     let id_field = getIdField(table)
     for (const [property, value] of Object.entries(entity)) {
-      if (property != id_field && value != null){
+      if (property != id_field && !(property in non_update_fields)  !&& value != null){
         fields.push(property);
         params.push(value);
       }

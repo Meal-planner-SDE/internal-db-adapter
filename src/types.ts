@@ -57,13 +57,15 @@ export interface MPUser {
 export interface ShoppingList {
   shopping_list_id: number
 }
-export interface RecipeRaw {
-  recipe_id: number;
-}
-export class Recipe {
-  recipe_id: number;
-  constructor (recipe:RecipeRaw) {
-    this.recipe_id = recipe.recipe_id;
-  }
+export interface ShoppingListEntry {
+  shopping_list_entry_id: number,
+  shopping_list_id: number,
+  ingredient_id: number,
+  quantity: number,
+  measure: string
 }
 
+
+export interface Recipe {
+  recipe_id: number;
+}

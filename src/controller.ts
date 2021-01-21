@@ -19,7 +19,8 @@ import {
   // getRegionById,
   // getRegions, getCasesByRegionId, getLineChart,
   getUsers, getUserByUsername, insertUser, updateUser,
-  getUserRecipes, insertUserRecipes, removeUserRecipe
+  getUserRecipes, insertUserRecipes, removeUserRecipe,
+  getUserShoppingListEntries, updateUserShoppingListEntry
 } from './core';
 import {
   // getDateFromRequest,
@@ -158,3 +159,12 @@ export const deleteUserRecipe = async (req: Request, res: Response) => {
   const rid = getIdFromRequest(req, 'rid');
   res.send(await removeUserRecipe(id, rid));
 };
+
+export const userShoppingListEntries = async (req: Request, res: Response) => {
+  const id = getIdFromRequest(req);
+  res.send(await getUserShoppingListEntries(id));
+}
+export const patchUserShoppingListEntry = async (req: Request, res: Response) => {
+  const id = getIdFromRequest(req);
+  res.send(await updateUserShoppingListEntry(id, req.body));
+}
