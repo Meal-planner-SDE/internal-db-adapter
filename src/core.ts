@@ -220,9 +220,9 @@ export const getUserShoppingListEntries: (id:number) => Promise<ShoppingListEntr
 };
 
 
-export const updateUserShoppingListEntry: (mp_user_id: number,
-   shopping_list_entry : ShoppingListEntry) => Promise<ShoppingListEntry | Error> = async (
-  mp_user_id, shopping_list_entry
+export const updateUserShoppingListEntries: (mp_user_id: number,
+  shopping_list_entries : ShoppingListEntry[]) => Promise<ShoppingListEntry[] | Error> = async (
+  mp_user_id, shopping_list_entries
 ) => {
   try {
     // let entry = await getUserShoppingListEntry(mp_user_id, shopping_list_entry.ingredient_id);
@@ -237,23 +237,28 @@ export const updateUserShoppingListEntry: (mp_user_id: number,
       return user;
     }
     
-    let fields = ["ingredient_id", "quantity", "measure"]
-    let params = [shopping_list_entry.ingredient_id, 
-      shopping_list_entry.quantity, shopping_list_entry.measure]
+    let fields = ["shopping_list_id", "ingredient_id", "quantity", "measure"]
+    let uslid = user.shopping_list_id;
+    let params =  shopping_list_entries.map(shopping_list_entry =>
+        [uslid, shopping_list_entry.ingredient_id, 
+         shopping_list_entry.quantity, shopping_list_entry.measure]
+    );
     let query = `
-    INSERT INTO SHOPPING_LIST_ENTRY (shopping_list_id, ${fields.join(`, `)}) 
-    VALUES ($1, ${params.map((param, i) => `$${i+2}` )})
+    INSERT INTO SHOPPING_LIST_ENTRY (${fields.join(`, `)}) 
+    VALUES ${params.map((entry, i) => `(
+      ${entry.map((value, j) => `$${i*entry.length + (j+1)}`).join(`, `)}
+      )`).join(`, `)}
     ON CONFLICT (ingredient_id) DO UPDATE
-      SET ${fields.map((field, i) => 
-        `${field} = ${(field == `quantity` ? `SHOPPING_LIST_ENTRY.quantity + `: ``)} $${params.length + i + 2}`)}
-      WHERE SHOPPING_LIST_ENTRY.measure = $${params.length + fields.length + 2}
+      SET quantity = SHOPPING_LIST_ENTRY.quantity + EXCLUDED.quantity
+      WHERE SHOPPING_LIST_ENTRY.measure = EXCLUDED.measure
     RETURNING *;`;
-    let user_id_param = [user.shopping_list_id] as (string | number)[];
-    return await queryDB(query, user_id_param.concat(params).concat(params).concat([shopping_list_entry.measure]))
+    console.log(query, params)
+    // let user_id_param = [user.shopping_list_id] as (string | number)[];
+    return await queryDB(query, Array.prototype.concat.apply([], params))
     .then((entries) => {
-      if (entries.length == 0)
-        throw new Error("The measure conflicts with the one already in the list")
-      return entries[0] as ShoppingListEntry;
+      // if (entries.length != )
+      //   throw new Error("The measure conflicts with the one already in the list")
+      return entries as ShoppingListEntry[];
     });
   } catch (e) {
     console.error(e);

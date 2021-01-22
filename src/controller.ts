@@ -20,7 +20,7 @@ import {
   // getRegions, getCasesByRegionId, getLineChart,
   getUsers, getUserByUsername, insertUser, updateUser,
   getUserRecipes, insertUserRecipes, removeUserRecipe,
-  getUserShoppingListEntries, updateUserShoppingListEntry,
+  getUserShoppingListEntries, updateUserShoppingListEntries,
   getUserMealPlans, getUserMealPlanById, insertUserMealPlan, removeUserMealPlan
 } from './core';
 import {
@@ -165,9 +165,9 @@ export const userShoppingListEntries = async (req: Request, res: Response) => {
   const id = getIdFromRequest(req);
   res.send(await getUserShoppingListEntries(id));
 }
-export const patchUserShoppingListEntry = async (req: Request, res: Response) => {
+export const patchUserShoppingListEntries = async (req: Request, res: Response) => {
   const id = getIdFromRequest(req);
-  res.send(await updateUserShoppingListEntry(id, req.body));
+  res.send(await updateUserShoppingListEntries(id, req.body));
 }
 
 export const userMealPlans = async (req: Request, res: Response) => {

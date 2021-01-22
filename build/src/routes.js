@@ -28,7 +28,7 @@ router.get('/users/:id/recipes', controller_1.userRecipes);
 router.post('/users/:id/recipes', controller_1.postUserRecipes);
 router.delete('/users/:id/recipes/:rid', controller_1.deleteUserRecipe);
 router.get('/users/:id/shoppingList', controller_1.userShoppingListEntries);
-router.patch('/users/:id/shoppingList', controller_1.patchUserShoppingListEntry);
+router.patch('/users/:id/shoppingList', controller_1.patchUserShoppingListEntries);
 router.get('/users/:id/mealPlans', controller_1.userMealPlans);
 router.get('/users/:id/mealPlans/:mid', controller_1.userMealPlanById);
 router.post('/users/:id/mealPlans/', controller_1.postUserMealPlan);

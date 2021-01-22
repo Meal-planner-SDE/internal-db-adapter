@@ -28,7 +28,7 @@ import {
   deleteUserRecipe,
 
   userShoppingListEntries,
-  patchUserShoppingListEntry,
+  patchUserShoppingListEntries,
 
   userMealPlans,
   userMealPlanById,
@@ -58,7 +58,7 @@ router.delete('/users/:id/recipes/:rid', deleteUserRecipe);
 
 
 router.get('/users/:id/shoppingList', userShoppingListEntries);
-router.patch('/users/:id/shoppingList', patchUserShoppingListEntry);
+router.patch('/users/:id/shoppingList', patchUserShoppingListEntries);
 
 router.get('/users/:id/mealPlans', userMealPlans);
 router.get('/users/:id/mealPlans/:mid', userMealPlanById);

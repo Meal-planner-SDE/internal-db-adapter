@@ -19,7 +19,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUserMealPlan = exports.postUserMealPlan = exports.userMealPlanById = exports.userMealPlans = exports.patchUserShoppingListEntry = exports.userShoppingListEntries = exports.deleteUserRecipe = exports.postUserRecipes = exports.userRecipes = exports.patchUser = exports.postUser = exports.userByUsername = exports.users = void 0;
+exports.deleteUserMealPlan = exports.postUserMealPlan = exports.userMealPlanById = exports.userMealPlans = exports.patchUserShoppingListEntries = exports.userShoppingListEntries = exports.deleteUserRecipe = exports.postUserRecipes = exports.userRecipes = exports.patchUser = exports.postUser = exports.userByUsername = exports.users = void 0;
 const core_1 = require("./core");
 const helper_1 = require("./helper");
 //#region --- EXAMPLE ---
@@ -138,11 +138,11 @@ const userShoppingListEntries = (req, res) => __awaiter(void 0, void 0, void 0, 
     res.send(yield core_1.getUserShoppingListEntries(id));
 });
 exports.userShoppingListEntries = userShoppingListEntries;
-const patchUserShoppingListEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const patchUserShoppingListEntries = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = helper_1.getIdFromRequest(req);
-    res.send(yield core_1.updateUserShoppingListEntry(id, req.body));
+    res.send(yield core_1.updateUserShoppingListEntries(id, req.body));
 });
-exports.patchUserShoppingListEntry = patchUserShoppingListEntry;
+exports.patchUserShoppingListEntries = patchUserShoppingListEntries;
 const userMealPlans = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = helper_1.getIdFromRequest(req);
     res.send(yield core_1.getUserMealPlans(id));
