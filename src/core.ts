@@ -19,13 +19,19 @@ import {
   ShoppingList,
   ShoppingListEntry,
   Recipe, 
-  isError
+  MealPlan,
+  MealPlanRaw,
+  DailyPlan,
+  DailyPlanRaw,
+  DailyPlanRecipe,
+  isError,
 } from './types';
 import { queryDB, insertQuery, updateQuery } from './dbUtils';
 // import config from '../config';
 import qs from 'qs';
 
 import axios from 'axios';
+import { stringify } from 'querystring';
 // import secrets from '../secrets';
 axios.defaults.paramsSerializer = (params) => {
   return qs.stringify(params, { indices: false });
@@ -257,8 +263,158 @@ export const updateUserShoppingListEntry: (mp_user_id: number,
   }
 };
 
-// export const removeUserShoppingListEntry: (mp_user_id: number, ingredient_id : number) => Promise<ShoppingListEntry | Error> = async (
-//   mp_user_id, ingredient_id
-// ) => {
-//   return {} as ShoppingListEntry;
-// }
+export const getUserMealPlans: (id: number) => Promise<MealPlan[] | Error> = async (id) => {
+  try {
+    await checkUserExists(id);
+    interface MPjoinDPjoinDPR extends MealPlan, DailyPlan, DailyPlanRecipe {};
+    let results = await queryDB(`SELECT * 
+      FROM MEAL_PLAN NATURAL JOIN DAILY_PLAN NATURAL JOIN DAILY_PLAN_RECIPE
+      WHERE mp_user_id = $1
+      ORDER BY meal_plan_id, daily_plan_number, recipe_number;
+      `, [id]).then(results => results as MPjoinDPjoinDPR[]);
+    let meal_plans = {} as {[meal_plan_id: number]: MealPlan};
+    let daily_plans = {} as {[daily_plan_id: number]: DailyPlan};
+    for (let result of results){
+      if (! (result.meal_plan_id in meal_plans)){
+        meal_plans[result.meal_plan_id] = new MealPlan(result);
+      }
+
+      if (! (result.daily_plan_id in daily_plans)){
+        daily_plans[result.daily_plan_id] = new DailyPlan(result);
+        meal_plans[result.meal_plan_id].daily_plans.push(daily_plans[result.daily_plan_id]); 
+      }
+
+      daily_plans[result.daily_plan_id].recipes.push({"recipe_id" : result.recipe_id} as Recipe); 
+
+    }
+    return Object.values(meal_plans);
+  } catch (e) {
+    console.error(e);
+    return {
+      error: e.toString(),
+    };
+  }
+}
+
+export const getUserMealPlanById: (id: number, mid: number) => Promise<MealPlan | Error> = async (id, mid) => {
+  try {
+    await checkUserExists(id);
+    interface MPjoinDPjoinDPR extends MealPlan, DailyPlan, DailyPlanRecipe {};
+    let results = await queryDB(`SELECT * 
+      FROM MEAL_PLAN NATURAL JOIN DAILY_PLAN NATURAL JOIN DAILY_PLAN_RECIPE
+      WHERE mp_user_id = $1 AND meal_plan_id = $2
+      ORDER BY daily_plan_number, recipe_number;
+      `, [id, mid]).then(results => {
+        if (results.length == 0)
+          throw new Error(`The user with id ${id} has no meal plan with id ${mid}`);
+        return results as MPjoinDPjoinDPR[];
+      });
+    let meal_plan = new MealPlan(results[0]);
+    let daily_plans = {} as {[daily_plan_id: number]: DailyPlan};
+    for (let result of results){
+      if (! (result.daily_plan_id in daily_plans)){
+        daily_plans[result.daily_plan_id] = new DailyPlan(result);
+        meal_plan.daily_plans.push(daily_plans[result.daily_plan_id]); 
+      }
+      daily_plans[result.daily_plan_id].recipes.push({"recipe_id" : result.recipe_id} as Recipe); 
+
+    }
+    return meal_plan;
+  } catch (e) {
+    console.error(e);
+    return {
+      error: e.toString(),
+    };
+  }
+}
+
+const insertDailyPlan: (dp: DailyPlan, n:number) => Promise <DailyPlan> = async (dp, n) => {
+  let params = [dp.meal_plan_id];
+  let query = `INSERT INTO DAILY_PLAN (meal_plan_id, daily_plan_number) VALUES ($1, ${n}) RETURNING *;`
+
+  let daily_plan = await queryDB(query, params)
+  .then((daily_plans) => {
+    console.log("Daily_plans got!");
+    console.log(daily_plans)
+    return daily_plans[0] as DailyPlan;
+  });
+  console.log(daily_plan);
+  let rp = [] as Promise<Recipe>[];
+  dp.recipes.map((recipe, i) => {
+    params = [recipe.recipe_id, daily_plan.daily_plan_id]
+    query = `INSERT INTO DAILY_PLAN_RECIPE (recipe_id, daily_plan_id, recipe_number) 
+      VALUES ($1, $2, ${i}) RETURNING recipe_id;`;
+    rp.push(queryDB(query, params).then(recipes => recipes[0] as Recipe));
+  });
+
+  daily_plan.recipes = await Promise.all(rp);
+
+  return daily_plan;
+  
+}
+
+export const insertUserMealPlan: (id: number, mp: MealPlan) => Promise<MealPlan | Error> = async (id, mp) => {
+  try {
+    // check daily plans
+    if (mp.daily_plans.length == 0){
+      throw new Error(`No daily plans given`);
+    }
+    mp.daily_plans.forEach((dp) => {
+      if (dp.recipes.length == 0){
+        throw new Error(`No recipes given for daily meal plan ${String(dp)}`);
+      } else {
+        dp.recipes.forEach(r => {
+          if (r.recipe_id == null) {
+            throw new Error (`Recipe ${String(r)} must have a recipe_id`);
+          }
+        })
+      }
+    })
+    
+    // insert meal plan
+    let paramsMP = [id, mp.daily_calories, mp.diet_type] as any[];
+    let queryMP = `
+      INSERT INTO MEAL_PLAN (mp_user_id, daily_calories, diet_type ) VALUES
+        (${paramsMP.map((param, i) => `$${i+1}`).join(`, `)})
+        RETURNING *`;
+    let meal_plan = await queryDB(queryMP, paramsMP)
+    .then((meal_plans) => {
+      return meal_plans[0] as MealPlan;
+    });
+
+
+    let dpp = mp.daily_plans.map((dp, i) => {
+      dp.meal_plan_id = meal_plan.meal_plan_id;
+      return insertDailyPlan(dp, i);
+    })
+
+    meal_plan.daily_plans = await Promise.all(dpp);
+    
+    return meal_plan;
+
+  } catch (e) {
+    console.error(e);
+    return {
+      error: e.toString(),
+    };
+  }
+}
+export const removeUserMealPlan: (id: number, mid: number) => Promise<MealPlan | Error> = async (id, mid) => {
+  try{
+    let meal_plan = await getUserMealPlanById(id, mid);
+    if (isError(meal_plan)){
+      return meal_plan;
+    }
+    let params = [mid];
+    let query = `
+      DELETE FROM MEAL_PLAN WHERE meal_plan_id = $1;
+    `;
+    await queryDB(query, params);
+    return meal_plan
+  } catch (e) {
+    console.error(e);
+    return {
+      error: e.toString(),
+    };
+  }
+}

@@ -19,7 +19,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.patchUserShoppingListEntry = exports.userShoppingListEntries = exports.deleteUserRecipe = exports.postUserRecipes = exports.userRecipes = exports.patchUser = exports.postUser = exports.userByUsername = exports.users = void 0;
+exports.deleteUserMealPlan = exports.postUserMealPlan = exports.userMealPlanById = exports.userMealPlans = exports.patchUserShoppingListEntry = exports.userShoppingListEntries = exports.deleteUserRecipe = exports.postUserRecipes = exports.userRecipes = exports.patchUser = exports.postUser = exports.userByUsername = exports.users = void 0;
 const core_1 = require("./core");
 const helper_1 = require("./helper");
 //#region --- EXAMPLE ---
@@ -143,3 +143,25 @@ const patchUserShoppingListEntry = (req, res) => __awaiter(void 0, void 0, void 
     res.send(yield core_1.updateUserShoppingListEntry(id, req.body));
 });
 exports.patchUserShoppingListEntry = patchUserShoppingListEntry;
+const userMealPlans = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = helper_1.getIdFromRequest(req);
+    res.send(yield core_1.getUserMealPlans(id));
+});
+exports.userMealPlans = userMealPlans;
+const userMealPlanById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = helper_1.getIdFromRequest(req);
+    const mid = helper_1.getIdFromRequest(req, 'mid');
+    res.send(yield core_1.getUserMealPlanById(id, mid));
+});
+exports.userMealPlanById = userMealPlanById;
+const postUserMealPlan = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = helper_1.getIdFromRequest(req);
+    res.send(yield core_1.insertUserMealPlan(id, req.body));
+});
+exports.postUserMealPlan = postUserMealPlan;
+const deleteUserMealPlan = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = helper_1.getIdFromRequest(req);
+    const mid = helper_1.getIdFromRequest(req, 'mid');
+    res.send(yield core_1.removeUserMealPlan(id, mid));
+});
+exports.deleteUserMealPlan = deleteUserMealPlan;

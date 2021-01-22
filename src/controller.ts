@@ -20,7 +20,8 @@ import {
   // getRegions, getCasesByRegionId, getLineChart,
   getUsers, getUserByUsername, insertUser, updateUser,
   getUserRecipes, insertUserRecipes, removeUserRecipe,
-  getUserShoppingListEntries, updateUserShoppingListEntry
+  getUserShoppingListEntries, updateUserShoppingListEntry,
+  getUserMealPlans, getUserMealPlanById, insertUserMealPlan, removeUserMealPlan
 } from './core';
 import {
   // getDateFromRequest,
@@ -167,4 +168,23 @@ export const userShoppingListEntries = async (req: Request, res: Response) => {
 export const patchUserShoppingListEntry = async (req: Request, res: Response) => {
   const id = getIdFromRequest(req);
   res.send(await updateUserShoppingListEntry(id, req.body));
+}
+
+export const userMealPlans = async (req: Request, res: Response) => {
+  const id = getIdFromRequest(req);
+  res.send(await getUserMealPlans(id));
+}
+export const userMealPlanById = async (req: Request, res: Response) => {
+  const id = getIdFromRequest(req);
+  const mid = getIdFromRequest(req, 'mid')
+  res.send(await getUserMealPlanById(id, mid));
+}
+export const postUserMealPlan = async (req: Request, res: Response) => {
+  const id = getIdFromRequest(req);
+  res.send(await insertUserMealPlan(id, req.body));
+}
+export const deleteUserMealPlan = async (req: Request, res: Response) => {
+  const id = getIdFromRequest(req);
+  const mid = getIdFromRequest(req, 'mid')
+  res.send(await removeUserMealPlan(id, mid));
 }

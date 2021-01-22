@@ -28,7 +28,12 @@ import {
   deleteUserRecipe,
 
   userShoppingListEntries,
-  patchUserShoppingListEntry
+  patchUserShoppingListEntry,
+
+  userMealPlans,
+  userMealPlanById,
+  postUserMealPlan,
+  deleteUserMealPlan
 
 } from './controller';
 
@@ -54,6 +59,12 @@ router.delete('/users/:id/recipes/:rid', deleteUserRecipe);
 
 router.get('/users/:id/shoppingList', userShoppingListEntries);
 router.patch('/users/:id/shoppingList', patchUserShoppingListEntry);
+
+router.get('/users/:id/mealPlans', userMealPlans);
+router.get('/users/:id/mealPlans/:mid', userMealPlanById);
+router.post('/users/:id/mealPlans/', postUserMealPlan);
+router.delete('/users/:id/mealPlans/:mid', deleteUserMealPlan);
+
 
 // router.get('/regions', regions);
 // router.get('/region', regionById);
