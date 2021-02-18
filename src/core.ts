@@ -13,7 +13,7 @@
 import { 
   // CasesPerRegion, Entry, 
   Error, 
-  // isError,
+  isError,
   // Region, 
   MPUser, 
   ShoppingList,
@@ -24,7 +24,6 @@ import {
   DailyPlan,
   DailyPlanRaw,
   DailyPlanRecipe,
-  isError,
 } from './types';
 import { queryDB, insertQuery, updateQuery } from './dbUtils';
 // import config from '../config';
