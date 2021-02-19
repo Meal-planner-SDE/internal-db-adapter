@@ -247,7 +247,7 @@ export const updateUserShoppingListEntries: (mp_user_id: number,
     VALUES ${params.map((entry, i) => `(
       ${entry.map((value, j) => `$${i*entry.length + (j+1)}`).join(`, `)}
       )`).join(`, `)}
-    ON CONFLICT (ingredient_id) DO UPDATE
+    ON CONFLICT (ingredient_id, shopping_list_id) DO UPDATE
       SET quantity = SHOPPING_LIST_ENTRY.quantity + EXCLUDED.quantity
       WHERE SHOPPING_LIST_ENTRY.measure = EXCLUDED.measure
     RETURNING *;`;
