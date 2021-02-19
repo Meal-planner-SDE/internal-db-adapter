@@ -76,15 +76,18 @@ export interface DailyPlanRecipe{
 export interface DailyPlanRaw {
   daily_plan_id: number,
   meal_plan_id: number,
+  daily_plan_number: number,
   recipes: Recipe[]
 }
 
 export class DailyPlan {
   daily_plan_id: number;
+  daily_plan_number: number;
   meal_plan_id: number;
   recipes: Recipe[];
   constructor(daily_plan: DailyPlanRaw){
     this.daily_plan_id = daily_plan.daily_plan_id;
+    this.daily_plan_number = daily_plan.daily_plan_number;
     this.meal_plan_id = daily_plan.meal_plan_id;
     this.recipes = daily_plan.recipes || [];
   }
