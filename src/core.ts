@@ -236,10 +236,10 @@ export const updateUserShoppingListEntries: (mp_user_id: number,
       return user;
     }
     
-    let fields = ["shopping_list_id", "ingredient_id", "quantity", "measure"]
+    let fields = ["shopping_list_id", "ingredient_id", "ingredient_name", "quantity", "measure"]
     let uslid = user.shopping_list_id;
     let params =  shopping_list_entries.map(shopping_list_entry =>
-        [uslid, shopping_list_entry.ingredient_id, 
+        [uslid, shopping_list_entry.ingredient_id, shopping_list_entry.ingredient_name, 
          shopping_list_entry.quantity, shopping_list_entry.measure]
     );
     let query = `

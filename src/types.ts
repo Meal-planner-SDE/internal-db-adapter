@@ -61,6 +61,7 @@ export interface ShoppingListEntry {
   shopping_list_entry_id: number,
   shopping_list_id: number,
   ingredient_id: number,
+  ingredient_name: string,
   quantity: number,
   measure: string
 }
