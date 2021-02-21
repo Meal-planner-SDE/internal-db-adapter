@@ -14,21 +14,21 @@ import { Request } from 'express';
  * @return the value of the parameter if the parameter is
  * correct and available, false otherwise
  */
-export const getNumberFromRequest: (req: Request, param: string) => number | false = (
+export const getNumberFromRequest: (req: Request, param: string) => number  = (
   req,
   param
 ) => {
   let value = req.query[param];
 
   if (typeof value !== 'string') {
-    return false;
+    return NaN;
   }
 
   try {
     return parseInt(value);
   } catch (e) {
     console.error(`Error extracting parameter ${param}:`, e);
-    return false;
+    return NaN;
   }
 };
 
@@ -36,12 +36,12 @@ export const parseNumber: (param: string) => number = (
   param
 ) => {
   if (typeof param !== 'string') {
-    throw new Error(`${param} must be a string`);
+    return NaN
   }
   try {
     return parseInt(param);
   } catch (e) {
-     throw new Error(`Found ${param}, expecting an integer`);
+     return NaN;
   }
 };
 
@@ -53,58 +53,4 @@ export const parseNumber: (param: string) => number = (
  */
 export const getIdFromRequest: (req: Request, id_name?:string) => number = (req, id_name?) => {
   return parseNumber(req.params[id_name || "id"]);
-};
-
-/**
- * Extract day, month and year from the request query-string
- * @param req The request (as given in the controller)
- * @return an object containing day, month and year parameters
- * if the parameter for the day/month/year is not available,
- * the current day/month/year will be used
- */
-export const getDateFromRequest: (
-  req: Request
-) => {
-  day: number;
-  month: number;
-  year: number;
-} = (req) => {
-  let day = getNumberFromRequest(req, 'd');
-  let month = getNumberFromRequest(req, 'm');
-  let year = getNumberFromRequest(req, 'y');
-
-  const currentDate = getCurrentDate();
-  if (day === false) {
-    day = currentDate.day;
-  }
-  if (month === false) {
-    month = currentDate.month;
-  }
-  if (year === false) {
-    year = currentDate.year;
-  }
-
-  return {
-    day: day,
-    month: month,
-    year: year,
-  };
-};
-
-/**
- * Returns the current day
- * @return an object containing day, month and years parameters
- * representing the current date (today)
- */
-export const getCurrentDate: () => {
-  day: number;
-  month: number;
-  year: number;
-} = () => {
-  const date = new Date();
-  return {
-    day: date.getDate(),
-    month: date.getMonth() + 1,
-    year: date.getFullYear(),
-  };
 };
