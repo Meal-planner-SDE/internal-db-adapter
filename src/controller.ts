@@ -29,162 +29,168 @@ import {
   // getNumberFromRequest,
 } from './helper';
 
-//#region --- EXAMPLE ---
-
-// export const hello = (req: Request, res: Response) => {
-//   // If in the URL (GET request) e.g. localhost:8080/?name=pippo
-//   const name = req.query['name'];
-
-//   // If in body of the request (as json or form-data)
-//   // const name = req.body['name'];
-
-//   // If in the URL as a parameter e.g. localhost:8080/pippo/ and route defined as '/:name'
-//   // const name = req.params['name'];
-
-//   if (name != null && typeof name === 'string') {
-//     res.send(getHello(name));
-//   } else {
-//     res.status(400);
-//     res.send({ error: 'Invalid name format!' });
-//   }
-// };
-
-//#endregion
-
-//#region --- REGIONS and CASES ---
-
-// export const regions = async (req: Request, res: Response) => {
-//   res.send(await getRegions());
-// };
-
-// export const regionById = async (req: Request, res: Response) => {
-//   const id = getIdFromRequest(req);
-//   if (id !== false) {
-//     res.send(await getRegionById(id));
-//   } else {
-//     res.status(400);
-//     res.send({ error: 'Invalid ID format!' });
-//   }
-// };
-
-// export const casesByRegionId = async (req: Request, res: Response) => {
-//   const id = getIdFromRequest(req);
-//   if (id !== false) {
-//     const date = getDateFromRequest(req);
-//     res.send(await getCasesByRegionId(id, date.year, date.month, date.day));
-//   } else {
-//     res.status(400);
-//     res.send({ error: 'Invalid ID format!' });
-//   }
-// };
-
-//#endregion
-
-//#region --- LOCAL ELABORATIONS ---
-
-// export const ranking = async (req: Request, res: Response) => {
-//   const date = getDateFromRequest(req);
-//   let n = getNumberFromRequest(req, 'n');
-//   if (n === false) {
-//     n = 5;
-//   }
-//   let ord = req.query['ord'];
-//   if (ord !== 'asc') {
-//     ord = 'desc';
-//   }
-//   res.send(await getRanking(n, ord, date.year, date.month, date.day));
-// };
-
-//#endregion
-
-//#region --- CHARTS ---
-
-// export const barChart = async (req: Request, res: Response) => {
-//   const date = getDateFromRequest(req);
-
-//   const chart = await getBarChart(date.year, date.month, date.day);
-//   if (!isError(chart)) {
-//     res.contentType('image/png');
-//   }
-//   res.send(chart);
-// };
-
-// export const lineChart = async (req: Request, res: Response) => {
-//   const id = getIdFromRequest(req);
-//   if (id !== false) {
-//     const date = getDateFromRequest(req);
-
-//     const chart = await getLineChart(id, date.year, date.month);
-//     if (!isError(chart)) {
-//       res.contentType('image/png');
-//     }
-//     res.send(chart);
-//   } else {
-//     res.status(400);
-//     res.send({ error: 'Invalid ID format!' });
-//   }
-// };
-
-//#endregion
 
 
 export const users = async (req: Request, res: Response) => {
-  res.send(await getUsers());
+
+  let users = await getUsers();
+  if (isError(users)){
+    res.status(400);
+  }
+  res.send(users);
 };
 
 export const userByUsername = async (req: Request, res: Response) => {
-  res.send(await getUserByUsername(req.params.username));
+  let user = await getUserByUsername(req.params.username);
+  if (isError(user)){
+    res.status(400);
+  }
+  res.send(user);
 };
 
 export const postUser = async (req: Request, res: Response) => {
-  res.send(await insertUser(req.body));
+  let user = await insertUser(req.body);
+  if (isError(user)){
+    res.status(400);
+  }
+  res.send(user);
 };
 
 export const patchUser = async (req: Request, res: Response) => {
   const id = getIdFromRequest(req);
-  res.send(await updateUser(id, req.body));
+  if (isNaN(id)){
+    res.status(400);
+    res.send({'error' : 'id should be an integer.'})
+  } else {
+    let user = await updateUser(id, req.body);
+    if (isError(user)){
+      res.status(400);
+    }
+    res.send(user)
+  };
 };
 
 export const userRecipes = async (req: Request, res: Response) => {
   const id = getIdFromRequest(req);
-  res.send(await getUserRecipes(id));
+  if (isNaN(id)){
+    res.status(400);
+    res.send({'error' : 'id should be an integer.'})
+  } else {
+    let recipes = await getUserRecipes(id)
+    if (isError(recipes)){
+      res.status(400);
+    }
+    res.send(recipes)
+  };
 };
 
 export const postUserRecipes = async (req: Request, res: Response) => {
   const id = getIdFromRequest(req);
-  res.send(await insertUserRecipes(id, req.body));
+  if (isNaN(id)){
+    res.status(400);
+    res.send({'error' : 'id should be an integer.'})
+  } else {
+    let recipes = await insertUserRecipes(id, req.body);
+    if (isError(recipes)){
+      res.status(400);
+    }
+    res.send(recipes)
+  };
 };
 
 export const deleteUserRecipe = async (req: Request, res: Response) => {
   const id = getIdFromRequest(req);
   const rid = getIdFromRequest(req, 'rid');
-  res.send(await removeUserRecipe(id, rid));
+  if (isNaN(id) || isNaN(rid)){
+    res.status(400);
+    res.send({'error' : 'id and rid should be integers.'})
+  } else {
+    let recipe = await removeUserRecipe(id, rid);
+    if (isError(recipe)){
+      res.status(400);
+    }
+    res.send(recipe)
+  };
 };
 
 export const userShoppingListEntries = async (req: Request, res: Response) => {
   const id = getIdFromRequest(req);
-  res.send(await getUserShoppingListEntries(id));
+  if (isNaN(id)){
+    res.status(400);
+    res.send({'error' : 'id should be an integer.'})
+  } else {
+    let entries = await getUserShoppingListEntries(id);
+    if (isError(entries)){
+      res.status(400);
+    }
+    res.send(entries)
+  };
 }
 export const patchUserShoppingListEntries = async (req: Request, res: Response) => {
   const id = getIdFromRequest(req);
-  res.send(await updateUserShoppingListEntries(id, req.body));
+  if (isNaN(id)){
+    res.status(400);
+    res.send({'error' : 'id should be an integer.'})
+  } else {
+    let entries = await updateUserShoppingListEntries(id, req.body);
+    if (isError(entries)){
+      res.status(400);
+    }
+    res.send(entries)
+  };
 }
 
 export const userMealPlans = async (req: Request, res: Response) => {
   const id = getIdFromRequest(req);
-  res.send(await getUserMealPlans(id));
+  if (isNaN(id)){
+    res.status(400);
+    res.send({'error' : 'id should be an integer.'})
+  } else {
+    let meal_plans = await getUserMealPlans(id);
+    if (isError(meal_plans)){
+      res.status(400);
+    }
+    res.send(meal_plans)
+  };
 }
 export const userMealPlanById = async (req: Request, res: Response) => {
   const id = getIdFromRequest(req);
   const mid = getIdFromRequest(req, 'mid')
-  res.send(await getUserMealPlanById(id, mid));
+  if (isNaN(id) || isNaN(mid)){
+    res.status(400);
+    res.send({'error' : 'id and mid should be integers.'})
+  } else {
+    let meal_plan = await getUserMealPlanById(id, mid);
+    if (isError(meal_plan)){
+      res.status(400);
+    }
+    res.send(meal_plan)
+  };
 }
 export const postUserMealPlan = async (req: Request, res: Response) => {
   const id = getIdFromRequest(req);
-  res.send(await insertUserMealPlan(id, req.body));
+  if (isNaN(id)){
+    res.status(400);
+    res.send({'error' : 'id should be an integer.'})
+  } else {
+    let meal_plan = await insertUserMealPlan(id, req.body);
+    if (isError(meal_plan)){
+      res.status(400);
+    }
+    res.send(meal_plan)
+  };
 }
 export const deleteUserMealPlan = async (req: Request, res: Response) => {
   const id = getIdFromRequest(req);
   const mid = getIdFromRequest(req, 'mid')
-  res.send(await removeUserMealPlan(id, mid));
+  if (isNaN(id) || isNaN(mid)){
+    res.status(400);
+    res.send({'error' : 'id and mid should be integers.'})
+  } else {
+    let meal_plan = await removeUserMealPlan(id, mid);
+    if (isError(meal_plan)){
+      res.status(400);
+    }
+    res.send(meal_plan)
+  };
 }
